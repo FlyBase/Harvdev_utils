@@ -172,9 +172,9 @@ class Feature(Base):
 
 class AuditChado(Base):
     __tablename__ = 'audit_chado'
-    __table_args__ = (
-        Index('audit_idx1', 'audited_table', 'record_pkey'),
-    )
+    # __table_args__ = (
+    #     Index('audit_idx1', 'audited_table', 'record_pkey'),
+    # )
 
     audit_transaction = Column(String(1), nullable=False),
     transaction_timestamp = Column(DateTime, nullable=False),
