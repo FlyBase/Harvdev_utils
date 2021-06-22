@@ -145,19 +145,46 @@ class Analysisprop(Base):
     type = relationship('Cvterm')
 
 
-t_audit_chado = Table(
-    'audit_chado', metadata,
-    Column('audit_transaction', String(1), nullable=False),
-    Column('transaction_timestamp', DateTime, nullable=False),
-    Column('userid', String(255), nullable=False),
-    Column('audited_table', String(255), nullable=False),
-    Column('record_pkey', Integer, nullable=False),
-    Column('record_ukey_cols', String, nullable=False),
-    Column('record_ukey_vals', Text, nullable=False),
-    Column('audited_cols', Text, nullable=False),
-    Column('audited_vals', Text, nullable=False),
-    Index('audit_idx1', 'audited_table', 'record_pkey')
-)
+class Feature(Base):
+    __tablename__ = 'feature'
+    __table_args__ = (
+        UniqueConstraint('organism_id', 'uniquename', 'type_id'),
+    )
+
+    feature_id = Column(Integer, primary_key=True, server_default=text("nextval('feature_feature_id_seq'::regclass)"))
+    dbxref_id = Column(ForeignKey('dbxref.dbxref_id', ondelete='SET NULL'), index=True)
+    organism_id = Column(ForeignKey('organism.organism_id', ondelete='CASCADE', deferrable=True, initially='DEFERRED'), nullable=False, index=True)
+    name = Column(String(255), index=True)
+    uniquename = Column(Text, nullable=False, index=True)
+    residues = Column(Text)
+    seqlen = Column(Integer)
+    md5checksum = Column(String(32))
+    type_id = Column(ForeignKey('cvterm.cvterm_id', ondelete='CASCADE', deferrable=True, initially='DEFERRED'), nullable=False, index=True)
+    is_analysis = Column(Boolean, nullable=False, server_default=text("false"))
+    timeaccessioned = Column(DateTime, nullable=False, server_default=text("('now'::text)::timestamp(6) with time zone"))
+    timelastmodified = Column(DateTime, nullable=False, server_default=text("('now'::text)::timestamp(6) with time zone"))
+    is_obsolete = Column(Boolean, nullable=False, server_default=text("false"))
+
+    dbxref = relationship('Dbxref')
+    organism = relationship('Organism')
+    type = relationship('Cvterm')
+
+
+class AuditChado(Base):
+    __tablename__ = 'audit_chado'
+    __table_args__ = (
+        Index('audit_idx1', 'audited_table', 'record_pkey'),
+    )
+
+    audit_transaction = Column(String(1), nullable=False),
+    transaction_timestamp = Column(DateTime, nullable=False),
+    usedid = Column(String(255), nullable=False),
+    audited_table = Column(String(255), nullable=False),
+    record_pkey = Column(Integer, nullable=False),
+    record_ukey_cols = Column(String, nullable=False),
+    record_ukey_vals = Column(Text, nullable=False),
+    audited_cols = Column(Text, nullable=False),
+    audited_vals = Column(Text, nullable=False)
 
 
 class CellLine(Base):

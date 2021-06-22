@@ -3,6 +3,7 @@ from .production import Analysisfeature
 from .production import Analysisgrp
 from .production import Analysisgrpmember
 from .production import Analysisprop
+from .production import AuditChado
 from .production import CellLine
 from .production import CellLineCvterm
 from .production import CellLineCvtermprop
